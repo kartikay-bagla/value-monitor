@@ -1,7 +1,6 @@
 import os
 import time
 import traceback
-import config
 from typing import Optional
 from fastapi import HTTPException, Request
 
@@ -17,9 +16,9 @@ def getenv(
     raise ValueError(f"Environment variable {key} not set.")
 
 
-def get_secret_key(request: Request):
+def get_secret_key(request: Request, secret_key: str):
     secret_key = request.headers.get("secret-key")
-    if secret_key != config.SECRET_KEY:
+    if secret_key != secret_key:
         raise HTTPException(status_code=400, detail="Invalid secret key")
     return secret_key
 
