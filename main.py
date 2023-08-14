@@ -28,6 +28,10 @@ class Metrics(BaseModel):
     metrics: list[Metric]
 
 
+class PostResponse(BaseModel):
+    added_metrics: int
+
+
 @app.post("/metrics/")
 async def create_metrics(
     metrics_in: Metrics,
@@ -39,7 +43,7 @@ async def create_metrics(
     db.commit()
     db.flush(metrics)
 
-    return {"msg": "Metrics added successfully!", "added_metrics": len(metrics)}
+    return PostResponse(added_metrics=len(metrics))
 
 
 class MetricQuery(BaseModel):
