@@ -1,4 +1,5 @@
-from value_logger.utils import getenv
+from fastapi import HTTPException, Request
+from utils import getenv
 
 PG_USERNAME = getenv("PG_USERNAME")
 PG_PASSWORD = getenv("PG_PASSWORD")
@@ -10,3 +11,10 @@ PG_DATABASE_URL = (
     f"@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
 )
 SECRET_KEY = getenv("SECRET_KEY")
+
+
+def get_secret_key(request: Request):
+    secret_key = request.headers.get("secret-key")
+    if secret_key != SECRET_KEY:
+        raise HTTPException(status_code=400, detail="Invalid secret key")
+    return secret_key

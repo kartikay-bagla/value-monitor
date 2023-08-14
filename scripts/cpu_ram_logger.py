@@ -2,7 +2,7 @@ import datetime as dt
 import sqlite3
 import psutil
 import requests
-from value_logger.utils import getenv
+from utils import getenv
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 SECRET_KEY = getenv("SECRET_KEY")

@@ -2,19 +2,13 @@ import datetime as dt
 from typing import Optional
 
 import config
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from models import get_db, Metric as MetricModel
 from sqlalchemy.orm import Session
 
-from value_logger.utils import get_secret_key
 
-
-def gsk(request: Request):
-    return get_secret_key(request=request, secret_key=config.SECRET_KEY)
-
-
-app = FastAPI(dependencies=[Depends(get_secret_key)])
+app = FastAPI(dependencies=[Depends(config.get_secret_key)])
 
 
 class Metric(BaseModel):
