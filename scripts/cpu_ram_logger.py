@@ -28,18 +28,20 @@ def add_entry_to_db():
     db.commit()
 
 
-def update_api():
+def update_api(last_updated=None):
     db = sqlite3.connect(DB_FILE_NAME)
     cursor = db.cursor()
     # get last updated
-    cursor.execute("SELECT time FROM last_executed limit 1")
-    result = cursor.fetchone()
-    if result is None:
-        last_updated = dt.datetime.now()
-        cursor.execute("INSERT INTO last_executed VALUES (?)", (last_updated,))
-        db.commit()
-    else:
-        last_updated = dt.datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S.%f")
+    if last_updated is None:
+        cursor.execute("SELECT time FROM last_executed limit 1")
+        result = cursor.fetchone()
+        if result is None:
+            last_updated = dt.datetime.now()
+            cursor.execute("INSERT INTO last_executed VALUES (?)", (last_updated,))
+            db.commit()
+        else:
+            last_updated = dt.datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S.%f")
+
     # get all entries since last_updated to now
     cursor.execute("SELECT * FROM metrics WHERE time > ?", (last_updated,))
     result = cursor.fetchall()
