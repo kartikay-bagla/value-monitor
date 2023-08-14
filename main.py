@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
-from models import get_db
+from models import get_db, Metric as MetricModel
 from sqlalchemy.orm import Session
 
 from utils import get_secret_key
@@ -27,7 +27,7 @@ async def create_metrics(
     metrics_in: Metrics,
     db: Session = Depends(get_db),
 ):
-    metrics = [Metric(**metric.dict()) for metric in metrics_in.metrics]
+    metrics = [MetricModel(**metric.model_dump()) for metric in metrics_in.metrics]
 
     db.add_all(metrics)
     db.commit()
@@ -47,19 +47,23 @@ class MetricQuery(BaseModel):
 async def get_metrics(
     query: MetricQuery = Depends(), db: Session = Depends(get_db)
 ) -> Metrics:
-    metrics_query = db.query(Metric)
+    metrics_query = db.query(MetricModel)
 
     if query.device_name:
-        metrics_query = metrics_query.filter(Metric.device_name == query.device_name)
+        metrics_query = metrics_query.filter(
+            MetricModel.device_name == query.device_name
+        )
 
     if query.metric_name:
-        metrics_query = metrics_query.filter(Metric.metric_name == query.metric_name)
+        metrics_query = metrics_query.filter(
+            MetricModel.metric_name == query.metric_name
+        )
 
     if query.start_time:
-        metrics_query = metrics_query.filter(Metric.timestamp >= query.start_time)
+        metrics_query = metrics_query.filter(MetricModel.timestamp >= query.start_time)
 
     if query.end_time:
-        metrics_query = metrics_query.filter(Metric.timestamp <= query.end_time)
+        metrics_query = metrics_query.filter(MetricModel.timestamp <= query.end_time)
 
     metrics = metrics_query.all()
     return Metrics(metrics=[Metric(**metric.__dict__) for metric in metrics])
