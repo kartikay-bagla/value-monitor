@@ -63,7 +63,9 @@ def update_api():
         )
     print(f"Pushing {len(metrics)} to API")
     # push to API
-    resp = requests.post(API_URL, json=metrics, headers={"secret-key": SECRET_KEY})
+    resp = requests.post(
+        API_URL, json={"metrics": metrics}, headers={"secret-key": SECRET_KEY}
+    )
     if resp.status_code != 200:
         print(f"Update API failed with code {resp.status_code}.")
         print(resp.json())
@@ -79,6 +81,6 @@ _init_table(db=db)
 db.close()
 
 bs = BlockingScheduler()
-bs.add_job(add_entry_to_db, 'interval', seconds=5)
-bs.add_job(update_api, 'interval', minutes=1)
+bs.add_job(add_entry_to_db, "interval", seconds=5)
+bs.add_job(update_api, "interval", minutes=1)
 bs.start()
