@@ -32,7 +32,7 @@ def update_api():
     db = sqlite3.connect(DB_FILE_NAME)
     cursor = db.cursor()
     # get last updated
-    cursor.execute("SELECT last_executed FROM last_executed limit 1")
+    cursor.execute("SELECT time FROM last_executed limit 1")
     result = cursor.fetchone()
     if result is None:
         last_updated = dt.datetime.now()
@@ -70,7 +70,7 @@ def update_api():
         return
     # update last updated
     print("Updating last executed.")
-    cursor.execute("UPDATE last_executed SET last_executed = ?", (dt.datetime.now(),))
+    cursor.execute("UPDATE last_executed SET time = ?", (dt.datetime.now(),))
     db.commit()
 
 
